@@ -17,10 +17,12 @@ struct CalibrationMatrix
 class SurfaceAnalyser
 {
 	CalibrationMatrix calib;
-	ros::Publisher pub;
+	ros::NodeHandle node;
+	ros::Publisher pcPub;
+	ros::Subscriber depthSub;
 public:
 	SurfaceAnalyser(void);
-	PointCloud* CreatePointCloud(const sensor_msgs::Image::ConstPtr&);
+	PointCloud::Ptr CreatePointCloud(const sensor_msgs::Image::ConstPtr&);
 	PointCloud* Segment(PointCloud*);
 	void LoadDepth(const sensor_msgs::Image::ConstPtr&);
 };
