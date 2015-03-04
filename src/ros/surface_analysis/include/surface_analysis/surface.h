@@ -20,9 +20,11 @@ class SurfaceAnalyser
 	ros::NodeHandle node;
 	ros::Publisher pcPub;
 	ros::Subscriber depthSub;
+	ros::Subscriber cameraSub;
 public:
 	SurfaceAnalyser(void);
 	PointCloud::Ptr CreatePointCloud(const sensor_msgs::Image::ConstPtr&);
 	PointCloud* Segment(PointCloud*);
 	void LoadDepth(const sensor_msgs::Image::ConstPtr&);
+	void LoadCameraInfo(const sensor_msgs::CameraInfo::ConstPtr&);
 };

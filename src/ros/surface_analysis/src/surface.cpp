@@ -27,10 +27,12 @@ SurfaceAnalyser::SurfaceAnalyser()
 	// Create publishers and subscribers
 	pcPub = node.advertise<PointCloud>("surface/pointCloud", 1);
 	depthSub = node.subscribe("depthImage",10, &SurfaceAnalyser::LoadDepth,this);
+	cameraSub = node.subscribe("cameraInfo",10, &SurfaceAnalyser::LoadCameraInfo,this);
+
 
 	// Camera calibration matrix parameters
-	calib.fx = 1;
-	calib.fy = 1;
+	calib.fx = 2000;
+	calib.fy = 2000;
 	calib.cx = 262;
 	calib.cy = 212;
 }
@@ -42,23 +44,27 @@ PointCloud::Ptr SurfaceAnalyser::CreatePointCloud(const sensor_msgs::Image::Cons
 
 	// Create a new point cloud object
 	PointCloud::Ptr pc (new PointCloud);
+
 	pc->header.frame_id = "pc_frame";
 	pc->height = depth->height;
 	pc->width = depth->width;
  	pc->is_dense = true;
         pc->points.resize(depth->height*depth->width); 
+
 	cout << "Populating point data" << endl;
-	cout << "Point cloud w = " << pc->width << " h = " << pc->height << endl;
-	int x, y, i, Z;
+	
 	// Populate it with points
-	for(x=0; x<depth->width; x++)
+	int u, v, i, X, Y, Z;
+	for(u=0; u<depth->width; u++)
 	{
-		for(y=0; y<depth->height; y++)
+		for(v=0; v<depth->height; v++)
 		{ 
-			i = y * depth->width + x;
-			Z = depth->data[i]; 
-			cout << "x: " << x << " y: "<< y << " z: " << Z << " w = " << pc->width << " h = " << pc->height << endl;
-			pc->points[i] = pcl::PointXYZ(x,y,Z);
+			i = v * depth->width + u;
+
+			Z = depth->data[i];
+			X = Z*(u-calib.cx)/calib.fx;
+			Y = Z*(v-calib.cy)/calib.fy; 
+			pc->points[i] = pcl::PointXYZ(X,Y,Z);
 		}
 	}
 
@@ -79,4 +85,30 @@ void SurfaceAnalyser::LoadDepth(const sensor_msgs::Image::ConstPtr& msg)
 	pcPub.publish(pc);
 	cout << "Broadcasting point cloud" << endl;
 	
+}
+
+void SurfaceAnalyser::LoadCameraInfo(const sensor_msgs::CameraInfo::ConstPtr& msg)
+{
+	cout << "Camera parameters recieved" << endl;
+	// Load camera parameters from calibration matrix
+	//calib.fx = msg->P[0];
+	//calib.fy = msg->P[4];
+	//calib.cx = msg->P[2];
+	//calib.cy = msg->P[5];	
+	//cout << "fx = " << calib.fx << " fy = " << calib.fy << " cx = " << calib.cx << " cy = " << calib.cy << endl; 
+
+	cout << "Intrinsic camera matrix K" << endl;
+	for(int i=1;i<8;i++)
+	{   cout << msg->K[i] << ", ";}
+	cout << msg->K[8] << ";" << endl;
+	
+	cout << "Rectification matrix R" << endl;
+	for(int i=1;i<8;i++)
+	{   cout << msg->R[i] << ", ";}
+	cout << msg->R[8] << ";" << endl;
+	
+	cout << "Projection matrix P" << endl;
+	for(int i=1;i<11;i++)
+	{   cout << msg->P[i] << ", ";}
+	cout << msg->P[11] << ";" << endl;
 }
