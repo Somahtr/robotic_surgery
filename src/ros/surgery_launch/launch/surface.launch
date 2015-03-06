@@ -1,25 +1,14 @@
 <launch>
-<!--
-	<node pkg="rosbag" name="play" type="play" args="$(find surface_analysis)/data/panda.bag -l"/>
--->
-    <param name="serverNameOrIP" value="windle" />
-		<group ns="/head/kinect2">
-		<node name="startRGB" pkg="k2_client" type="startRGB"/>
-		<node name="startDepth" pkg="k2_client" type="startDepth"/>
-		<node name="startIR" pkg="k2_client" type="startIR"/>
-		</group>
+
+	<node pkg="rosbag" name="play" type="play" args="$(find surface_analysis)/data/pointCloud.bag -l"/>
+
+
 		
 	<node pkg="surface_analysis" type="surface" name="surface" output="screen">
-		<remap from="depthImage" to="kinect/head/depth/image_raw" />
-		<remap from="cameraInfo" to="head/kinect2/rgb/camera_info" />
-		<remap from="colourImage" to="rgb/image_color" />
-		<remap from="irImage" to="ir/image_ir" />
+		<remap from="pointCloud" to="kinect/head/point_cloud" />
+		<!--remap from="targetPoint" to="head/kinect2/rgb/camera_info" /-->
     </node>
 
-    <node pkg="depth_view" type="depth_view.py" name="depth_view" output="screen">
-		<remap from="image" to="depth/image_raw" />
-		<param name="window_name" value="Depth image" />
-    </node>
 
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find surface_analysis)/src/cloud-config.rviz"/>
 </launch>

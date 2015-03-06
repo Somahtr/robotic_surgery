@@ -2,29 +2,21 @@
 #include <pcl_ros/point_cloud.h>
 #include <pcl/point_types.h>
 #include <sensor_msgs/Image.h>
-#include <sensor_msgs/CameraInfo.h>
+#include <sensor_msgs/PointCloud2.h>
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
 
-void LoadInfo(const sensor_msgs::CameraInfo);
-
-struct CalibrationMatrix
+class SurfaceAnalysisNode
 {
-	float fx, fy, cx, cy;
-};
-
-class SurfaceAnalyser
-{
-	CalibrationMatrix calib;
-	ros::NodeHandle node;
-	ros::Publisher pcPub;
-	ros::Subscriber depthSub;
-	ros::Subscriber cameraSub;
+    ros::NodeHandle node;
+    ros::Subscriber pcSub;
+    ros::Subscriber pointSub;
+    
+    PointCloud::Ptr pointCloud;
+        
 public:
-	SurfaceAnalyser(void);
-	PointCloud::Ptr CreatePointCloud(const sensor_msgs::Image::ConstPtr&);
-	PointCloud* Segment(PointCloud*);
-	void LoadDepth(const sensor_msgs::Image::ConstPtr&);
-	void LoadCameraInfo(const sensor_msgs::CameraInfo::ConstPtr&);
+    SurfaceAnalysisNode(void);
+    void LoadPointCloud(const sensor_msgs::PointCloud2::ConstPtr&);
+    
 };
