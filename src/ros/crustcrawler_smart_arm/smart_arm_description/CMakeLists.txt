@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(smart_arm_description)
 
+return()
 # mesh file generations
 find_package(catkin REQUIRED COMPONENTS convex_decomposition ivcon urdf)
 

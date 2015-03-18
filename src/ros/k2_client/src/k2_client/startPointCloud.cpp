@@ -9,6 +9,7 @@ int pointBufferSize = 2605056;
 int numberOfPoints = pointBufferSize / sizeof(float); // Hacky, much?
 int streamSize = pointBufferSize + sizeof(double);
 
+
 int main(int argC,char **argV)
 {
 	ros::init(argC,argV,"startPointCloud");
