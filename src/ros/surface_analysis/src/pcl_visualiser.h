@@ -1,0 +1,20 @@
+#include <boost/thread/thread.hpp>
+#include <ros/ros.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <pcl_ros/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/common/common_headers.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/visualization/pcl_visualizer.h>
+
+class Visualiser
+{
+    pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud;
+    pcl::PointCloud<pcl::Normal>::ConstPtr normals;
+public:
+	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+	
+	Visualiser(void);
+    void loadPointCloud(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+    void loadNormals(const pcl::PointCloud<pcl::Normal>::ConstPtr&);
+};
