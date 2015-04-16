@@ -30,13 +30,24 @@ int main(int argc, char *argv[])
 
 Visualiser::Visualiser()
 	: viewer(new pcl::visualization::PCLVisualizer("Robotic Surgery Point Cloud Viewer")),
-	cloud(new pcl::PointCloud<pcl::PointXYZ>)
+	cloud(new pcl::PointCloud<pcl::PointXYZ>),
+	normals(new pcl::PointCloud<pcl::Normal>)
 {
+	hasCloud = false;
+	hasNormals = false;
 	
     viewer->setBackgroundColor (0, 0, 0);
+    cloud->push_back(pcl::PointXYZ(1,1,0));
     viewer->addPointCloud<pcl::PointXYZ>(this->cloud);
     //viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
-    //viewer->addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal> (cloud, normals, 10, 0.05, "normals");
+    
+    //pcl::PointCloud<pcl::PointXYZ>::Ptr cld (new pcl::PointCloud<pcl::PointXYZ>);
+    //pcl::PointCloud<pcl::Normal>::Ptr nml (new pcl::PointCloud<pcl::Normal>);
+    
+    
+    normals->push_back(pcl::Normal(1,0,0));
+    viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, normals, 10, 0.05, "normals");
+    
     viewer->addCoordinateSystem (1.0);
     viewer->initCameraParameters ();
 }
@@ -45,11 +56,17 @@ void Visualiser::loadPointCloud(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& 
 {
     cout << "pclvis:Point cloud recieved" << endl;
     this->cloud = msg;
-    viewer->updatePointCloud<pcl::PointXYZ>(msg);    
+    hasCloud = true;
+    viewer->updatePointCloud<pcl::PointXYZ>(this->cloud);
+    viewer->updateCamera();    
 }
 
 void Visualiser::loadNormals(const pcl::PointCloud<pcl::Normal>::ConstPtr& msg)
 {
+	if(!hasCloud) {
+		cout << "Normals cannot be displayed: no point cloud added" << endl;
+		return;
+	}
     cout << "Surface normals recieved" << endl;
     this->normals = msg;
 }

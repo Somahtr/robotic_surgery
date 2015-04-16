@@ -9,8 +9,10 @@
 
 class Visualiser
 {
-    pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud;
+    pcl::PointCloud<pcl::PointXYZ>ConstPtr cloud;
     pcl::PointCloud<pcl::Normal>::ConstPtr normals;
+    bool hasCloud;
+    bool hasNormals;
 public:
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
 	
