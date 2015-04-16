@@ -1,14 +1,13 @@
 <launch>
 
-	<!--node pkg="rosbag" name="play" type="play" args="$(find surface_analysis)/data/pointCloud.bag -l"/-->
+	<node pkg="rosbag" name="play" type="play" args="$(find surface_analysis)/data/pointCloud.bag -l"/>
 		
 	<node pkg="surface_analysis" type="surface" name="surface">
-		<remap from="pointCloud" to="point_cloud" />
-		<!--remap from="targetPoint" to="head/kinect2/rgb/camera_info" /-->
+		<remap from="inputCloud" to="point_cloud" />
     </node>
 
-	<node pkg="surface_analysis" type="pclvis" name="pclvis" output="screen">
+	<!--node pkg="surface_analysis" type="pclvis" name="pclvis" output="screen">
 		<remap from="cloud" to="point_cloud" />
-	</node>
-    <!--node pkg="rviz" type="rviz" name="rviz" args="-d $(find surface_analysis)/src/cloud-config.rviz"/-->
+	</node-->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find surface_analysis)/src/cloud-config.rviz"/>
 </launch>

@@ -25,14 +25,26 @@ int main(int argc, char *argv[])
 SurfaceAnalysisNode::SurfaceAnalysisNode(void)
 {
 	// Create publishers and subscribers
-	pcSub = node.subscribe("pointCloud",10, &SurfaceAnalysisNode::LoadPointCloud,this);
+	pclSub = node.subscribe("inputCloud",10, &SurfaceAnalysisNode::LoadPointCloud,this);
+	pclPub = node.advertise<PointCloud>("outputCloud", 1);
 }
 
 
 
-void SurfaceAnalysisNode::LoadPointCloud(const sensor_msgs::PointCloud2::ConstPtr&)
+void SurfaceAnalysisNode::LoadPointCloud(const PointCloud::ConstPtr& msg)
 {
     cout << "Point cloud recieved" << endl;
+    pointCloud = msg;
+    
+    // Perform segmentation
+    this->Segment(pointCloud,0,1);
+    
+    pclPub.publish(pointCloud);
+}
+
+void SurfaceAnalysisNode::Segment(PointCloud::ConstPtr cloud, int zMin, int zMax)
+{
+	
 }
 
 

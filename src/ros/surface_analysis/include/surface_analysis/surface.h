@@ -9,13 +9,14 @@ typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 class SurfaceAnalysisNode
 {
     ros::NodeHandle node;
-    ros::Subscriber pcSub;
+    ros::Subscriber pclSub;
     ros::Subscriber pointSub;
+    ros::Publisher pclPub;
     
-    PointCloud::Ptr pointCloud;
+    PointCloud::ConstPtr pointCloud;
         
 public:
     SurfaceAnalysisNode(void);
-    void LoadPointCloud(const sensor_msgs::PointCloud2::ConstPtr&);
-    
+    void LoadPointCloud(const PointCloud::ConstPtr&);
+    void Segment(PointCloud::ConstPtr, int, int); 
 };
