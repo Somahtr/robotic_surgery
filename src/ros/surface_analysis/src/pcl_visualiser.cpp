@@ -33,19 +33,26 @@ Visualiser::Visualiser()
 	cloud(new pcl::PointCloud<pcl::PointXYZ>),
 	normals(new pcl::PointCloud<pcl::Normal>)
 {
+	// Create a test point cloud
+	PointCloud::Ptr pcl (new PointCloud);
+	pcl->push_back(pcl::PointXYZ(1,1,0));
+	
+	// Test normals
+	NormalCloud::Ptr nml (new NormalCloud);
+	nml->push_back(pcl::Normal(1,0,0));
+	
+	// Assign the point cloud pointers
+	cloud = pcl;
+	normals = nml;
+	
 	hasCloud = false;
 	hasNormals = false;
 	
     viewer->setBackgroundColor (0, 0, 0);
-    cloud->push_back(pcl::PointXYZ(1,1,0));
+    
     viewer->addPointCloud<pcl::PointXYZ>(this->cloud);
     //viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
-    
-    //pcl::PointCloud<pcl::PointXYZ>::Ptr cld (new pcl::PointCloud<pcl::PointXYZ>);
-    //pcl::PointCloud<pcl::Normal>::Ptr nml (new pcl::PointCloud<pcl::Normal>);
-    
-    
-    normals->push_back(pcl::Normal(1,0,0));
+     
     viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, normals, 10, 0.05, "normals");
     
     viewer->addCoordinateSystem (1.0);
