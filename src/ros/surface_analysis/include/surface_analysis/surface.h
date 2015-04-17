@@ -1,7 +1,10 @@
 #include <ros/ros.h>
 #include <pcl_ros/point_cloud.h>
-#include <pcl/point_types.h>
 #include <sensor_msgs/PointCloud2.h>
+
+#include <pcl/point_types.h>
+#include <pcl/filters/passthrough.h>
+
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
@@ -18,5 +21,5 @@ class SurfaceAnalysisNode
 public:
     SurfaceAnalysisNode(void);
     void LoadPointCloud(const PointCloud::ConstPtr&);
-    void Segment(PointCloud::ConstPtr, int, int); 
+    PointCloud::Ptr Segment(PointCloud::ConstPtr, int, int); 
 };

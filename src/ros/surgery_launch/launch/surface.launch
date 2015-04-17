@@ -2,7 +2,7 @@
 
 	<node pkg="rosbag" name="play" type="play" args="$(find surface_analysis)/data/pointCloud.bag -l"/>
 		
-	<node pkg="surface_analysis" type="surface" name="surface">
+	<node pkg="surface_analysis" type="surface" name="surface" output="screen">
 		<remap from="inputCloud" to="point_cloud" />
     </node>
 

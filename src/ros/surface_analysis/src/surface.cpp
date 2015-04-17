@@ -37,14 +37,25 @@ void SurfaceAnalysisNode::LoadPointCloud(const PointCloud::ConstPtr& msg)
     pointCloud = msg;
     
     // Perform segmentation
-    this->Segment(pointCloud,0,1);
+    pointCloud = this->Segment(pointCloud,0,0);
     
     pclPub.publish(pointCloud);
 }
 
-void SurfaceAnalysisNode::Segment(PointCloud::ConstPtr cloud, int zMin, int zMax)
+PointCloud::Ptr SurfaceAnalysisNode::Segment(PointCloud::ConstPtr cloud, int zMin, int zMax)
 {
+	cout << "Segmenting point cloud between " << zMin << " and " << zMax << endl;
 	
+	PointCloud::Ptr filteredCloud (new PointCloud);
+	
+	pcl::PassThrough<pcl::PointXYZ> pass;
+  	pass.setInputCloud (cloud);
+  	pass.setFilterFieldName ("z");
+  	pass.setFilterLimits (zMin, zMax);
+  	//pass.setFilterLimitsNegative (true);
+  	pass.filter(*filteredCloud);
+  	
+  	return filteredCloud;
 }
 
 
