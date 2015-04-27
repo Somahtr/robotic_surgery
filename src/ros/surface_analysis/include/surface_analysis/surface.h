@@ -21,5 +21,6 @@ class SurfaceAnalysisNode
 public:
     SurfaceAnalysisNode(void);
     void LoadPointCloud(const PointCloud::ConstPtr&);
-    PointCloud::Ptr Segment(PointCloud::ConstPtr, int, int); 
+    PointCloud::Ptr Segment(PointCloud::ConstPtr, int, int);
+    PointCloud::Ptr EstimateNormals(PointCloud::ConstPtr); 
 };

@@ -37,7 +37,7 @@ void SurfaceAnalysisNode::LoadPointCloud(const PointCloud::ConstPtr& msg)
     pointCloud = msg;
     
     // Perform segmentation
-    pointCloud = this->Segment(pointCloud,0,0);
+    pointCloud = this->Segment(pointCloud,0,1.5);
     
     pclPub.publish(pointCloud);
 }
@@ -58,5 +58,7 @@ PointCloud::Ptr SurfaceAnalysisNode::Segment(PointCloud::ConstPtr cloud, int zMi
   	return filteredCloud;
 }
 
-
+PointCloud::Ptr SurfaceAnalysisNode::EstimateNormals(PointCloud::ConstPtr cloud)
+{
+}
 
