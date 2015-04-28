@@ -63,6 +63,12 @@ void Visualiser::update(const PointCloud::ConstPtr& cloud, const NormalCloud::Co
 	// Update normals
 	viewer->removePointCloud("normals", 0);
 	viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud, nml, 100, 0.02, "normals");
-	
-	viewer->updateCamera();
+}
+
+void Visualiser::recolour(const PointCloud::ConstPtr& cloud, PointCloudRGB::Ptr& cloudRGB)
+{
+	pcl::copyPointCloud(*cloud, *cloudRGB);
+	for (size_t i = 0; i < cloudRGB->points.size (); ++i)
+	{
+	}
 }

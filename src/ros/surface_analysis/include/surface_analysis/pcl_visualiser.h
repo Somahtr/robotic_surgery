@@ -9,6 +9,7 @@
 #include <pcl/conversions.h>
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
+typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloudRGB;
 typedef pcl::PointCloud<pcl::Normal> NormalCloud;
 typedef pcl::PointCloud<pcl::PointNormal> PointNormalCloud;
 
@@ -20,4 +21,5 @@ public:
 	Visualiser(void);
     void loadNormals(const PointNormalCloud::ConstPtr&);
     void update(const PointCloud::ConstPtr&, const NormalCloud::ConstPtr&);
+    void recolour(const PointCloud::ConstPtr&, PointCloudRGB::Ptr&);
 };

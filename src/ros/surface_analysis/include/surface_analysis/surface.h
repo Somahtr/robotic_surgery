@@ -4,23 +4,32 @@
 
 #include <pcl/point_types.h>
 #include <pcl/filters/passthrough.h>
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/surface/mls.h>
 
+#include "pcl_visualiser.h"
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
-
+typedef pcl::PointCloud<pcl::PointNormal> PointNormalCloud;
 
 class SurfaceAnalysisNode
 {
     ros::NodeHandle node;
-    ros::Subscriber pclSub;
-    ros::Subscriber pointSub;
-    ros::Publisher pclPub;
+    
+    // Subscribers
+    ros::Subscriber subInputCloud;
+
+    // Publishers
+    ros::Publisher pubProcessedCloud;
+    ros::Publisher pubNormals;
     
     PointCloud::ConstPtr pointCloud;
         
 public:
     SurfaceAnalysisNode(void);
+    
     void LoadPointCloud(const PointCloud::ConstPtr&);
+    
     PointCloud::Ptr Segment(PointCloud::ConstPtr, int, int);
-    PointCloud::Ptr EstimateNormals(PointCloud::ConstPtr); 
+    PointNormalCloud EstimateNormals(PointCloud::ConstPtr); 
 };
