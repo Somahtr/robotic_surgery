@@ -113,7 +113,7 @@ add_definitions(${PCL_DEFINITIONS})
 ## Declare a cpp executable
 add_executable(surface src/surface.cpp)
 add_executable(pclvis src/pcl_visualiser.cpp)
-target_link_libraries(surface ${Boost_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(surface ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 target_link_libraries(pclvis ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 ## Add cmake target dependencies of the executable/library

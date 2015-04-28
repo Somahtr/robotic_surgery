@@ -6,20 +6,18 @@
 #include <pcl/common/common_headers.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/conversions.h>
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 typedef pcl::PointCloud<pcl::Normal> NormalCloud;
+typedef pcl::PointCloud<pcl::PointNormal> PointNormalCloud;
 
 class Visualiser
 {
-    PointCloud::ConstPtr cloud;
-    NormalCloud::ConstPtr normals;
-    bool hasCloud;
-    bool hasNormals;
 public:
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
 	
 	Visualiser(void);
-    void loadPointCloud(const PointCloud::ConstPtr&);
-    void loadNormals(const NormalCloud::ConstPtr&);
+    void loadNormals(const PointNormalCloud::ConstPtr&);
+    void update(const PointCloud::ConstPtr&, const NormalCloud::ConstPtr&);
 };

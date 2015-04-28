@@ -10,8 +10,7 @@ int main(int argc, char *argv[])
     
     // Create the visualiser object and subscribe to topics
     Visualiser* vis (new Visualiser);
-    ros::Subscriber cloudSub = node.subscribe<pcl::PointCloud<pcl::PointXYZ> >("cloud",10, &Visualiser::loadPointCloud, vis);
-    ros::Subscriber normalSub = node.subscribe<pcl::PointCloud<pcl::Normal> >("normals",10, &Visualiser::loadNormals, vis);
+    ros::Subscriber normalSub = node.subscribe<PointNormalCloud>("Visualiser/Normals",10, &Visualiser::loadNormals, vis);
     
 	// Wait for incoming messages
 	ros::Rate loop_rate(4);
@@ -29,51 +28,41 @@ int main(int argc, char *argv[])
 }
 
 Visualiser::Visualiser()
-	: viewer(new pcl::visualization::PCLVisualizer("Robotic Surgery Point Cloud Viewer")),
-	cloud(new pcl::PointCloud<pcl::PointXYZ>),
-	normals(new pcl::PointCloud<pcl::Normal>)
+	: viewer(new pcl::visualization::PCLVisualizer("Robotic Surgery Point Cloud Viewer"))
 {
-	// Create a test point cloud
-	PointCloud::Ptr pcl (new PointCloud);
-	pcl->push_back(pcl::PointXYZ(1,1,0));
-	
-	// Test normals
-	NormalCloud::Ptr nml (new NormalCloud);
-	nml->push_back(pcl::Normal(1,0,0));
-	
-	// Assign the point cloud pointers
-	cloud = pcl;
-	normals = nml;
-	
-	hasCloud = false;
-	hasNormals = false;
-	
     viewer->setBackgroundColor (0, 0, 0);
-    
-    viewer->addPointCloud<pcl::PointXYZ>(this->cloud);
-    //viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
-     
-    viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, normals, 10, 0.05, "normals");
-    
+       
     viewer->addCoordinateSystem (1.0);
     viewer->initCameraParameters ();
 }
 
-void Visualiser::loadPointCloud(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
+
+void Visualiser::loadNormals(const PointNormalCloud::ConstPtr& msg)
 {
-    cout << "pclvis:Point cloud recieved" << endl;
-    this->cloud = msg;
-    hasCloud = true;
-    viewer->updatePointCloud<pcl::PointXYZ>(this->cloud);
-    viewer->updateCamera();    
+	PointCloud::Ptr cloud (new PointCloud);
+	NormalCloud::Ptr normals (new NormalCloud);
+	
+	// Split the point-normal cloud into its separate points and normals
+	pcl::copyPointCloud(*msg, *cloud);
+	pcl::copyPointCloud(*msg, *normals);
+	
+	// Update the visualiser display
+	update(cloud, normals);
 }
 
-void Visualiser::loadNormals(const pcl::PointCloud<pcl::Normal>::ConstPtr& msg)
+void Visualiser::update(const PointCloud::ConstPtr& cloud, const NormalCloud::ConstPtr& nml)
 {
-	if(!hasCloud) {
-		cout << "Normals cannot be displayed: no point cloud added" << endl;
-		return;
+	// Update point cloud 
+	if(!viewer->updatePointCloud(cloud, "cloud"))
+	{
+		// Add a new point cloud if one does not exist
+		viewer->addPointCloud<pcl::PointXYZ>(cloud, "cloud");
+		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
 	}
-    cout << "Surface normals recieved" << endl;
-    this->normals = msg;
+	
+	// Update normals
+	viewer->removePointCloud("normals", 0);
+	viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud, nml, 100, 0.02, "normals");
+	
+	viewer->updateCamera();
 }
