@@ -39,36 +39,46 @@ Visualiser::Visualiser()
 
 void Visualiser::loadNormals(const PointNormalCloud::ConstPtr& msg)
 {
-	PointCloud::Ptr cloud (new PointCloud);
+	PointCloudRGB::Ptr cloud (new PointCloudRGB);
 	NormalCloud::Ptr normals (new NormalCloud);
 	
 	// Split the point-normal cloud into its separate points and normals
 	pcl::copyPointCloud(*msg, *cloud);
 	pcl::copyPointCloud(*msg, *normals);
 	
+	// Colour points according to their depth
+	this->recolour(cloud);
+	
 	// Update the visualiser display
 	update(cloud, normals);
 }
 
-void Visualiser::update(const PointCloud::ConstPtr& cloud, const NormalCloud::ConstPtr& nml)
+void Visualiser::update(const PointCloudRGB::ConstPtr& cloud, const NormalCloud::ConstPtr& nml)
 {
 	// Update point cloud 
 	if(!viewer->updatePointCloud(cloud, "cloud"))
 	{
 		// Add a new point cloud if one does not exist
-		viewer->addPointCloud<pcl::PointXYZ>(cloud, "cloud");
+		viewer->addPointCloud<pcl::PointXYZRGB>(cloud, "cloud");
 		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
 	}
 	
 	// Update normals
 	viewer->removePointCloud("normals", 0);
-	viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud, nml, 100, 0.02, "normals");
+	viewer->addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal>(cloud, nml, 10, 0.02, "normals");
 }
 
-void Visualiser::recolour(const PointCloud::ConstPtr& cloud, PointCloudRGB::Ptr& cloudRGB)
+void Visualiser::recolour(PointCloudRGB::Ptr& cloud)
 {
-	pcl::copyPointCloud(*cloud, *cloudRGB);
-	for (size_t i = 0; i < cloudRGB->points.size (); ++i)
+	// Find the minimum and maximum bounds of the point cloud
+	pcl::PointXYZRGB ptMin, ptMax;
+	pcl::getMinMax3D(*cloud, ptMin, ptMax);
+	float zRange = ptMax.z - ptMin.z;
+	
+	// Iterate through all points
+	for (size_t i = 0; i < cloud->points.size (); ++i)
 	{
+		cloud->points[i].r = 255*(cloud->points[i].z-ptMin.z)/zRange;
+		cloud->points[i].g = 255*(1-(cloud->points[i].z-ptMin.z)/zRange);
 	}
 }

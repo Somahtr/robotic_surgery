@@ -20,6 +20,6 @@ public:
 	
 	Visualiser(void);
     void loadNormals(const PointNormalCloud::ConstPtr&);
-    void update(const PointCloud::ConstPtr&, const NormalCloud::ConstPtr&);
-    void recolour(const PointCloud::ConstPtr&, PointCloudRGB::Ptr&);
+    void update(const PointCloudRGB::ConstPtr&, const NormalCloud::ConstPtr&);
+    void recolour(PointCloudRGB::Ptr&);
 };
