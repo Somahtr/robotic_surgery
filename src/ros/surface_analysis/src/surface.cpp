@@ -1,4 +1,4 @@
-#include "surface.h"
+#include "surface_analysis_node.h"
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -40,14 +40,20 @@ void SurfaceAnalysisNode::LoadPointCloud(const PointCloud::ConstPtr& msg)
     pointCloud = msg;
     
     // Perform segmentation
-    pointCloud = this->Segment(pointCloud,0,1.5);  
-    pubProcessedCloud.publish(pointCloud);
+    SegmentFilter filter;
+    PointCloud::Ptr filteredCloud (new PointCloud);
+    filter.segment(msg, filteredCloud);
+    //pointCloud = this->Segment(pointCloud,0,1.5);  
+    pubProcessedCloud.publish(*filteredCloud);
     
     // Perform smoothed normal estimation
-    PointNormalCloud pointNormals = EstimateNormals(pointCloud);
+    NormalsMLS normalEstimation;
+    PointCloudNormals::Ptr normals (new PointCloudNormals);
+    normalEstimation.estimateNormals(filteredCloud, normals);
+    //PointNormalCloud pointNormals = EstimateNormals(filteredCloud);
     
     // Visualise point cloud and normals
-    pubNormals.publish(pointNormals);
+    pubNormals.publish(*normals);
 }
 
 PointCloud::Ptr SurfaceAnalysisNode::Segment(PointCloud::ConstPtr cloud, int zMin, int zMax)
