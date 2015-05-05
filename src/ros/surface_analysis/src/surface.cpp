@@ -45,9 +45,9 @@ void SurfaceAnalysisNode::LoadPointCloud(const PointCloud::ConstPtr& msg)
     pubProcessedCloud.publish(*filteredCloud);
     
     // Perform smoothed normal estimation
-    NormalsMLS normalEstimation;
+    NormalsMLS ne;
     PointCloudNormals::Ptr normals (new PointCloudNormals);
-    normalEstimation.estimateNormals(filteredCloud, normals);
+    ne.estimateNormals(filteredCloud, normals);
     
     // Visualise point cloud and normals
     pubNormals.publish(*normals);

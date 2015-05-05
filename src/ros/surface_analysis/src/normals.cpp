@@ -1,5 +1,7 @@
 #include "normals.h"
 
+
+/// Moving least squares normal estimation ///
 void NormalsMLS::estimateNormals(const PointCloud::ConstPtr& cloudIn, PointCloudNormals::Ptr normalsOut)
 {
 	// Create a KD-Tree
@@ -18,4 +20,32 @@ void NormalsMLS::estimateNormals(const PointCloud::ConstPtr& cloudIn, PointCloud
 
 	// Reconstruct
 	mls.process (*normalsOut);
+	
+	// Reverse direction of normals
+	for (size_t i = 0; i < normalsOut->points.size (); ++i)
+	{
+		normalsOut->points[i].normal_x *=-1;
+		normalsOut->points[i].normal_y *=-1;
+		normalsOut->points[i].normal_z *=-1;
+	}
+}
+
+/// Basic normal estimation ///
+void NormalsBasic::estimateNormals(const PointCloud::ConstPtr& cloudIn, PointCloudNormals::Ptr normalsOut)
+{
+	pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normEst;
+	pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
+	
+	// Create KD-Tree
+	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+	tree->setInputCloud (cloudIn);
+	
+	// Perform normal estimation
+	normEst.setInputCloud (cloudIn);
+	normEst.setSearchMethod (tree);
+	normEst.setKSearch (20);
+	normEst.compute (*normals);
+
+	// Concatenate the XYZ and normal fields
+	pcl::concatenateFields (*cloudIn, *normals, *normalsOut);
 }
