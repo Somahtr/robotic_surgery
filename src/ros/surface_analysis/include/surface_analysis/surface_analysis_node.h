@@ -1,4 +1,5 @@
 #include "surface.h"
+
 #include "segment.h"
 #include "normals.h"
 
@@ -13,13 +14,8 @@ class SurfaceAnalysisNode
     ros::Publisher pubProcessedCloud;
     ros::Publisher pubNormals;
     
-    PointCloud::ConstPtr pointCloud;
         
 public:
-    SurfaceAnalysisNode(void);
-    
+    SurfaceAnalysisNode(void);   
     void LoadPointCloud(const PointCloud::ConstPtr&);
-    
-    PointCloud::Ptr Segment(PointCloud::ConstPtr, int, int);
-    PointNormalCloud EstimateNormals(PointCloud::ConstPtr); 
 };
