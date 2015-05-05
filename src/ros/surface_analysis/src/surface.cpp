@@ -45,11 +45,12 @@ void SurfaceAnalysisNode::LoadPointCloud(const PointCloud::ConstPtr& msg)
     pubProcessedCloud.publish(*filteredCloud);
     
     // Perform smoothed normal estimation
-    NormalsMLS ne;
+    NormalsBasic ne;
     PointCloudNormals::Ptr normals (new PointCloudNormals);
     ne.estimateNormals(filteredCloud, normals);
     
     // Visualise point cloud and normals
     pubNormals.publish(*normals);
+    ne.outputCurvatures(normals,"curvaturesbasic050515panda.csv");
 }
 

@@ -1,6 +1,5 @@
 #include "normals.h"
 
-
 /// Moving least squares normal estimation ///
 void NormalsMLS::estimateNormals(const PointCloud::ConstPtr& cloudIn, PointCloudNormals::Ptr normalsOut)
 {
@@ -48,4 +47,17 @@ void NormalsBasic::estimateNormals(const PointCloud::ConstPtr& cloudIn, PointClo
 
 	// Concatenate the XYZ and normal fields
 	pcl::concatenateFields (*cloudIn, *normals, *normalsOut);
+}
+
+// Output surface curvature values to a file for evaluation purposes
+void NormalsBase::outputCurvatures(const PointCloudNormals::ConstPtr& cloud, const char* fname)
+{
+	ofstream file;
+	file.open(fname);
+	cout << "Writing curvature data to file '" << fname << "'" << endl;
+	for (size_t i = 0; i < cloud->points.size (); ++i)
+		file << i << ", " << cloud->points[i].curvature << endl;
+		
+	file.close();
+	cout << "Data written successfully" << endl;
 }
