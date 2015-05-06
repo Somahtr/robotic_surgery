@@ -1,5 +1,8 @@
 #include "surface.h"
 
+#include <pcl_msgs/PolygonMesh.h>
+#include <pcl/conversions.h>
+
 #include "segment.h"
 #include "normals.h"
 #include "reconstruction.h"
@@ -14,6 +17,7 @@ class SurfaceAnalysisNode
     // Publishers
     ros::Publisher pubProcessedCloud;
     ros::Publisher pubNormals;
+    ros::Publisher pubMesh;
     
         
 public:

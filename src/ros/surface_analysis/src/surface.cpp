@@ -29,6 +29,7 @@ SurfaceAnalysisNode::SurfaceAnalysisNode(void)
 	
 	pubProcessedCloud = node.advertise<PointCloud>("Surface/ProcessedCloud", 1);
 	pubNormals = node.advertise<PointNormalCloud>("Surface/Normals", 1);
+	pubMesh = node.advertise<pcl_msgs::PolygonMesh>("Surface/Mesh", 1);
 }
 
 
@@ -58,5 +59,10 @@ void SurfaceAnalysisNode::LoadPointCloud(const PointCloud::ConstPtr& msg)
     GreedyTriangulation recon;
     PolygonMesh::Ptr mesh (new PolygonMesh);
     recon.reconstruct(normals, mesh);
+    
+    // Visualise mesh
+    pcl_msgs::PolygonMesh meshMsg;
+    pcl_conversions::fromPCL(*mesh, meshMsg);
+    pubMesh.publish(meshMsg);
 }
 

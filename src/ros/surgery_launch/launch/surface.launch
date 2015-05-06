@@ -7,7 +7,7 @@
     </node>
 
 	<node pkg="surface_analysis" type="pclvis" name="pclvis" output="screen">
-		<remap from="Visualiser/Normals" to="Surface/Normals" />
+		<remap from="Visualiser/Mesh" to="Surface/Mesh" />
 	</node>
     <!--node pkg="rviz" type="rviz" name="rviz" args="-d $(find surface_analysis)/src/cloud-config.rviz"/-->
 </launch>

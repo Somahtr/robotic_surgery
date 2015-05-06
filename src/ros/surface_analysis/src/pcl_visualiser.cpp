@@ -10,7 +10,8 @@ int main(int argc, char *argv[])
     
     // Create the visualiser object and subscribe to topics
     Visualiser* vis (new Visualiser);
-    ros::Subscriber normalSub = node.subscribe<PointNormalCloud>("Visualiser/Normals",10, &Visualiser::loadNormals, vis);
+    ros::Subscriber normalSub = node.subscribe<PointNormalCloud>("Visualiser/Normals",10, &Visualiser::visualiseNormals, vis);
+    ros::Subscriber meshSub = node.subscribe<pcl_msgs::PolygonMesh>("Visualiser/Mesh",10, &Visualiser::visualiseMesh, vis);
     
 	// Wait for incoming messages
 	ros::Rate loop_rate(4);
@@ -37,7 +38,7 @@ Visualiser::Visualiser()
 }
 
 
-void Visualiser::loadNormals(const PointNormalCloud::ConstPtr& msg)
+void Visualiser::visualiseNormals(const PointNormalCloud::ConstPtr& msg)
 {
 	PointCloudRGB::Ptr cloud (new PointCloudRGB);
 	NormalCloud::Ptr normals (new NormalCloud);
@@ -49,12 +50,6 @@ void Visualiser::loadNormals(const PointNormalCloud::ConstPtr& msg)
 	// Colour points according to their depth
 	this->recolour(cloud);
 	
-	// Update the visualiser display
-	update(cloud, normals);
-}
-
-void Visualiser::update(const PointCloudRGB::ConstPtr& cloud, const NormalCloud::ConstPtr& nml)
-{
 	// Update point cloud 
 	if(!viewer->updatePointCloud(cloud, "cloud"))
 	{
@@ -65,7 +60,20 @@ void Visualiser::update(const PointCloudRGB::ConstPtr& cloud, const NormalCloud:
 	
 	// Update normals
 	viewer->removePointCloud("normals", 0);
-	viewer->addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal>(cloud, nml, 10, 0.02, "normals");
+	viewer->addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal>(cloud, normals, 10, 0.02, "normals");
+}
+
+void Visualiser::visualiseMesh(const pcl_msgs::PolygonMesh::ConstPtr& msg)
+{
+	// Convert from pcl_msgs to pcl mesh
+	PolygonMesh mesh;
+	pcl_conversions::toPCL(*msg, mesh);
+	
+	if(!viewer->updatePolygonMesh(mesh, "mesh"))
+	{
+		// Add a new point cloud if one does not exist
+		viewer->addPolygonMesh(mesh, "mesh");
+	}
 }
 
 void Visualiser::recolour(PointCloudRGB::Ptr& cloud)
