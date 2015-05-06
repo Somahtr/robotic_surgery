@@ -2,6 +2,7 @@
 
 #include "segment.h"
 #include "normals.h"
+#include "reconstruction.h"
 
 class SurfaceAnalysisNode
 {

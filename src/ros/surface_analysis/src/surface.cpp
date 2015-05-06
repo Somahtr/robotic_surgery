@@ -37,20 +37,26 @@ void SurfaceAnalysisNode::LoadPointCloud(const PointCloud::ConstPtr& msg)
 {
     cout << "Point cloud recieved" << endl;
     
-    // Perform segmentation
+    // Segmentation
     SegmentFilter filter;
     PointCloud::Ptr filteredCloud (new PointCloud);
     filter.segment(msg, filteredCloud);
-     
+    
+    // Visualise segmented cloud 
     pubProcessedCloud.publish(*filteredCloud);
     
-    // Perform smoothed normal estimation
+    // Normal estimation
     NormalsBasic ne;
     PointCloudNormals::Ptr normals (new PointCloudNormals);
     ne.estimateNormals(filteredCloud, normals);
     
     // Visualise point cloud and normals
     pubNormals.publish(*normals);
-    ne.outputCurvatures(normals,"curvaturesbasic050515panda.csv");
+    //ne.outputCurvatures(normals,"curvaturesbasic050515panda.csv");
+    
+    // Mesh reconstruction
+    GreedyTriangulation recon;
+    PolygonMesh::Ptr mesh (new PolygonMesh);
+    recon.reconstruct(normals, mesh);
 }
 
